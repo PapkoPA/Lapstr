@@ -8,7 +8,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.lapstr.lapstr.MainActivity">
+    tools:context=".MainActivity">
 
 
     <Button
@@ -29,6 +29,22 @@
         android:layout_below="@+id/select_image"
         android:layout_centerHorizontal="true" />
 
+    <Button
+        android:text="New activity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/new_activity"
+        android:layout_below="@+id/start_btn"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:text="Sign Out"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/sign_out"
+        android:layout_below="@+id/new_activity"
+        android:layout_centerHorizontal="true" />
+
     <FrameLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
@@ -40,12 +56,6 @@
             android:layout_height="fill_parent"
             android:layout_gravity="center"
             />
-
-        <Button
-            android:text="Button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/button3" />
     </FrameLayout>
 
 </RelativeLayout>

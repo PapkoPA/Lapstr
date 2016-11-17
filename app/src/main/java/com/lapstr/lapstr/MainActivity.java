@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -15,6 +16,8 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -25,6 +28,10 @@ public class MainActivity extends AppCompatActivity {
     private StorageReference mSrorage;
     private ProgressDialog mProgressDialog;
     private Button buttonStart;
+    private Button newActivity;
+    private Button singout;
+    private FirebaseAuth.AuthStateListener authListener;
+    private FirebaseAuth auth;
 
     private static final int SELECT_VIDEO = 3;
 
@@ -39,6 +46,22 @@ public class MainActivity extends AppCompatActivity {
         mSrorage = FirebaseStorage.getInstance().getReference();
         mSelectImage = (Button) findViewById(R.id.select_image);
         mProgressDialog = new ProgressDialog(this);
+        auth = FirebaseAuth.getInstance();
+        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        authListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user == null) {
+                    // user auth state is changed - user is null
+                    // launch login activity
+                    startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                    finish();
+                }
+            }
+        };
+
         /////////////
         videoview = (VideoView)findViewById(R.id.surface_view);
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
@@ -47,6 +70,8 @@ public class MainActivity extends AppCompatActivity {
 
         videoview.setVideoPath(path);
         buttonStart = (Button) findViewById(R.id.start_btn);
+        newActivity = (Button) findViewById(R.id.new_activity);
+        singout = (Button) findViewById(R.id.sign_out);
         ////////
 
         mSelectImage.setOnClickListener(new View.OnClickListener() {
@@ -70,6 +95,29 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        newActivity.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                newActivity.setOnClickListener(this);
+                if (view == newActivity) {
+                    Intent SecAct = new Intent(getApplicationContext(), CameraActivity.class);
+                    startActivity(SecAct);
+                }
+            }
+        });
+
+        singout.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                singout.setOnClickListener(this);
+                if (view == singout) {
+                    signOut();
+                }
+            }
+        });
+    }
+    public void signOut() {
+        auth.signOut();
     }
 
     @Override
@@ -99,5 +147,20 @@ public class MainActivity extends AppCompatActivity {
         videoview.setMediaController(new MediaController(this));
         videoview.requestFocus();
         videoview.start();
+    }
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        auth.addAuthStateListener(authListener);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (authListener != null) {
+            auth.removeAuthStateListener(authListener);
+        }
     }
 }
